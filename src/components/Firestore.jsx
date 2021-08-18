@@ -1,5 +1,7 @@
 import React from 'react'
 import {db} from '../firebase'
+import moment from 'moment'
+import 'moment/locale/es'
 
 const Firestore = (props) => {
 
@@ -18,7 +20,7 @@ const Firestore = (props) => {
 
           const data = await db.collection(props.user.uid).get()
           const arrayData = data.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-          console.log(arrayData)
+        //   console.log(arrayData)
           setTareas(arrayData)
           
         } catch (error) {
@@ -29,7 +31,7 @@ const Firestore = (props) => {
   
       obtenerDatos()
   
-    }, [])
+    }, [props.user.uid])
   
     const agregar = async (e) => {
       e.preventDefault()
@@ -44,7 +46,7 @@ const Firestore = (props) => {
     
         const nuevaTarea = {
           name: tarea,
-          fecha: Date.now()
+          fecha: moment().format("LLL")
         }
         const data = await db.collection(props.user.uid).add(nuevaTarea)
   
@@ -115,7 +117,7 @@ const Firestore = (props) => {
                         {
                         tareas.map(item => (
                             <li className="list-group-item" key={item.id}>
-                            {item.name}
+                            {item.name} -{moment(item.fecha).format("LLL")}
                             <button 
                                 className="btn btn-danger btn-sm float-right  m-2"
                                 onClick={() => eliminar(item.id)}
@@ -148,9 +150,7 @@ const Firestore = (props) => {
                         value={tarea}
                         />
                         <button 
-                        className={
-                            modoEdicion ? 'btn btn-warning btn-block' : 'btn btn-dark btn-block'
-                        }
+                        className={ modoEdicion ? 'btn btn-warning btn-block' : 'btn btn-dark btn-block'}
                         type="submit"
                         >
                         {
